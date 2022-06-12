@@ -2,37 +2,33 @@
 
 include '../vendor/autoload.php';
 
-use App\Controller\IndexController;
-use App\Controller\ProductController;
-use App\controller\CategoryController;
-use App\Controller\ErrorController;
+//  use App\Connection\Connection;
+
+//  $connection = Connection::getConnection();
+
+//  $query = 'SELECT * FROM tb_category;';
+
+//  $preparacao = $connection -> prepare($query);
+//  $preparacao -> execute();
+
+//  while ($registro = $preparacao -> fetch()){
+//      var_dump($registro);
+//  }
 
 
-$url = explode('?', $_SERVER['REQUEST_URI'])[0];
+ use App\Controller\ErrorController;
 
-function CreateRoute(string $controllerName, string $methodName){
-    return [
-        'controller' => $controllerName,
-        'method' => $methodName,
-    ];
-}
 
-$routes=[
-    '/' => CreateRoute(IndexController::class, 'indexAction'),
-    '/produtos' => CreateRoute(ProductController::class, 'listAction'),
-    '/produtos/novo' => CreateRoute(ProductController::class, 'addAction'),
-    '/produtos/editar' => CreateRoute(ProductController::class, 'editAction'),
-    '/categoria' => CreateRoute(CategoryController::class, 'listAction'),
-    '/categoria/novo' => CreateRoute(CategoryController::class, 'addAction'),
-    '/categoria/edit' => CreateRoute(CategoryController::class, 'editAction'),
-];
+ $url = explode('?', $_SERVER['REQUEST_URI'])[0];
 
-if(false === isset($routes[$url])){
-    (new ErrorController()) ->notFoundAction();
-    exit;
-}
+ $routes = include '../config/routes.php';
 
-$controllerName = $routes[$url]['controller'];
-$methodName = $routes[$url]['method'];
+ if(false === isset($routes[$url])){
+     (new ErrorController()) ->notFoundAction();
+     exit;
+ }
 
-(new $controllerName()) -> $methodName();
+ $controllerName = $routes[$url]['controller'];
+ $methodName = $routes[$url]['method'];
+
+ (new $controllerName()) -> $methodName();
