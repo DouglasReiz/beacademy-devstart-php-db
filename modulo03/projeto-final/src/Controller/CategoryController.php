@@ -17,22 +17,70 @@ class CategoryController extends AbstractController
         $result = $con -> prepare('SELECT * FROM tb_category');
         $result->execute();
 
-        $cat = $result->fetch(\PDO::FETCH_ASSOC);
 
-        echo $cat['id'];
-        echo $cat['name'];
-        echo $cat['description'];
 
-        parent::render('category/list');
+
+        parent::render('category/list', $result);
     }
 
     public function addAction():void
     {
+        if($_POST){
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+
+            $query = "INSERT INTO tb_category(name,description) VALUES ('{$name}','{$description}')";
+
+            $con = Connection::getConnection();
+
+            $result = $con->prepare($query);
+            $result->execute();
+
+            echo 'Pronto, categoria cadastrada';
+        }
+
     parent::render('category/add');
     }
 
-    public function editAction():void
+    public function removeAction(): void
     {
-    parent::render('category/edit');
+        $con = Connection::getConnection();
+        $id = $_GET['id'];
+
+        $query = "DELETE FROM tb_category WHERE id='{$id}'";
+
+        $result = $con->prepare($query);
+        $result-> execute();
+        
+        echo 'Pronto categoria excluida';
+    }
+
+
+
+    public function updateAction():void
+    {
+        $id = $_GET['id'];
+
+        $con = Connection::getConnection();
+
+        if($_POST){
+            $newName = $_POST['name'];
+            $newDescription = $_POST['description'];
+
+            $queryUpdate = "UPDATE tb_category SET name= '{$newName}', description= '{$newDescription}' WHERE id='{$id}'";
+
+            $result = $con-> prepare($queryUpdate);
+            $result -> execute();
+            echo 'pronto, Atualizado';
+        }
+
+        $query = "SELECT * FROM tb_category WHERE id = '{$id}'";
+
+        $result = $con -> prepare($query);
+        $result -> execute();
+
+        $data = $result -> fetch(\PDO::FETCH_ASSOC);
+
+        parent::render('category/edit', $data);
     }
 }
